@@ -1,8 +1,6 @@
 <resources>
     <string name="app_name">Test2</string>
 
-    <string name="app_name">MPAndroidChart Example</string>
-
     <string name="viewGithub">View on GitHub</string>
     <string name="reportProblem">Problem Report</string>
     <string name="viewWebsite">Developer Website</string>
