@@ -17,6 +17,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="LineChart1" />
+        <activity android:name="LineChart2" />
     </application>
 
 </manifest>

@@ -25,7 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LineChart1 extends AppCompatActivity {
+public class LineChart2 extends AppCompatActivity {
     //importnute data z data.json
     ArrayList<String> timeStampRoundedToMinute = new ArrayList<>();
     ArrayList<Double> received_optical_power = new ArrayList<>();
