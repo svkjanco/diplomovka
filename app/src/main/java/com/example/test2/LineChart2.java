@@ -40,8 +40,8 @@ public class LineChart2 extends AppCompatActivity {
     ArrayList<Float>  avgHumiDHT22 = new ArrayList<>();
 
     private LineChart lineChart;
-    private List<Entry> entryAvgTempDHT22 = new ArrayList<>();
-    private List<Entry> entryAvgHumiDHT22 = new ArrayList<>();
+    private final ArrayList<Entry> entryAvgTempDHT22 = new ArrayList<>();
+    private final ArrayList<Entry> entryAvgHumiDHT22 = new ArrayList<>();
 
     @Override
 
@@ -290,16 +290,8 @@ public class LineChart2 extends AppCompatActivity {
             for(int i=0; i<jsonArray.length(); i++){
                 JSONObject obj = jsonArray.getJSONObject(i);
                 timeStampRoundedToMinute.add(obj.getString("timeStampRoundedToMinute"));
-               /* received_optical_power.add((float) obj.getDouble("received_optical_power"));
-                avgTemp.add((float) obj.getDouble("avgTemp"));
-                avgPressure.add((float) obj.getDouble("avgPressure")); */
                avgTempDHT22.add((float) obj.getDouble("avgTempDHT22"));
                 avgHumiDHT22.add((float) obj.getDouble("avgHumiDHT22"));
-              /* avgTempT_ds18b20.add((float) obj.getDouble("avgTempT_ds18b20"));
-               avgWindSpeedWU_anemometer.add((float) obj.getDouble("avgWindSpeedWU_anemometer"));
-              avgWindVoltageWU_anemometer.add((float) obj.getDouble("avgWindVoltageWU_anemometer"));
-               avgGM3G_gp2y1010au0f.add((float) obj.getDouble("avgGM3G_gp2y1010au0f"));
-                avgVISIBAAV_miniOFS.add((float) obj.getDouble("avgVISIBAAV_miniOFS"));   */
                 System.out.println("Data looaded successfuly");
             }
         }

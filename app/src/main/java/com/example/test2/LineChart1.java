@@ -50,7 +50,7 @@ public class LineChart1 extends AppCompatActivity {
 
     LineChart lineChart;
     LineData lineData;
-    List<Entry> entryList = new ArrayList<>();
+    ArrayList<Entry> entryList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
