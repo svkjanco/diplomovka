@@ -59,6 +59,7 @@ public class LineChart1 extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_line1);
         setTitle("AvgTemp");
+
         get_json(); //nacitanie dat z data.json
 
         // enable scaling and dragging
@@ -84,13 +85,15 @@ public class LineChart1 extends AppCompatActivity {
         // nastavenie xovej osy
         {
             XAxis xAxis = lineChart.getXAxis();
+            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+            xAxis.setTextSize(15f);
             xAxis.setValueFormatter(new IndexAxisValueFormatter(timeStampRoundedToMinute));/*for x axis values*/
             xAxis.setLabelCount(timeStampRoundedToMinute.size());
             xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
             xAxis.setDrawLabels(true);    //to hide all xaxis values
             xAxis.setDrawGridLines(false);
             xAxis.setDrawAxisLine(true);
-            xAxis.setLabelCount(3, true);
+            xAxis.setLabelCount(1);
         }
 
         //add data to chart
@@ -105,10 +108,12 @@ public class LineChart1 extends AppCompatActivity {
         lineDataSet.setFillColor(ColorTemplate.getHoloBlue());
         lineDataSet.setHighLightColor(Color.rgb(244, 117, 117));
         lineDataSet.setDrawCircleHole(false);
+        lineDataSet.setDrawCircles(false);
 
 
 
         lineData = new LineData(lineDataSet);
+        lineData.setValueTextSize(15f);
         lineChart.setData(lineData);
     }
 

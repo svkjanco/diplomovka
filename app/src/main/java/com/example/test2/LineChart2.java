@@ -76,13 +76,15 @@ public class LineChart2 extends AppCompatActivity {
         // nastavenie xovej osy
         {
             XAxis xAxis = lineChart.getXAxis();
+            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+            xAxis.setTextSize(15f);
             xAxis.setValueFormatter(new IndexAxisValueFormatter(timeStampRoundedToMinute));/*for x axis values*/
             xAxis.setLabelCount(timeStampRoundedToMinute.size());
             xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
             xAxis.setDrawLabels(true);    //to hide all xaxis values
             xAxis.setDrawGridLines(false);
             xAxis.setDrawAxisLine(true);
-            xAxis.setLabelCount(3, true);
+            xAxis.setLabelCount(1);
         }
 
         //add data to chart
@@ -100,6 +102,7 @@ public class LineChart2 extends AppCompatActivity {
         set1.setFillColor(ColorTemplate.getHoloBlue());
         set1.setHighLightColor(Color.rgb(244, 117, 117));
         set1.setDrawCircleHole(false);
+        set1.setDrawCircles(false);
 
         // avgHumiDHT22
         set2 = new LineDataSet(entryAvgHumiDHT22, "AvgHumiDHT22");
@@ -110,6 +113,7 @@ public class LineChart2 extends AppCompatActivity {
         set2.setFillColor(Color.RED);
         set2.setDrawCircleHole(false);
         set2.setHighLightColor(Color.rgb(244, 117, 117));
+        set2.setDrawCircles(false);
 
 
 
