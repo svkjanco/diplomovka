@@ -19,6 +19,7 @@
         </activity>
         <activity android:name="LineChart1" />
         <activity android:name="LineChart2" />
+        <activity android:name="LineChart3" />
     </application>
 
 </manifest>
