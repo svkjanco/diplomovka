@@ -54,6 +54,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             case 2:
                 i = new Intent(this, LineChart2.class);
                 break;
+            case 3:
+                i = new Intent(this, LineChart3.class);
+                break;
         }
 
         if (i != null) startActivity(i);

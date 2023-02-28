@@ -44,7 +44,6 @@ public class LineChart2 extends AppCompatActivity {
     private final ArrayList<Entry> entryAvgHumiDHT22 = new ArrayList<>();
 
     @Override
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
