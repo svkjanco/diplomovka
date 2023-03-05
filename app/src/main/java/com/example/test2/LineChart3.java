@@ -9,12 +9,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
 
 import com.github.mikephil.charting.animation.Easing;
+import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -41,8 +43,6 @@ import java.util.List;
 
 public class LineChart3 extends AppCompatActivity {
 
-    private LineChart lineChart;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,16 +51,23 @@ public class LineChart3 extends AppCompatActivity {
         setContentView(R.layout.datepicker);
         setTitle("DatePickerTest");
 
+        LineChart lineChart = findViewById(R.id.line_chart);
         ArrayList<Entry> entries = new ArrayList<>();
-        entries.add(new Entry(1623945600, 5)); // Entry(x-value, y-value)
-        entries.add(new Entry(1624032000, 7));
-        entries.add(new Entry(1624118400, 3));
+        entries.add(new Entry(	1677336896, 5));
+        entries.add(new Entry(		1677423296, 7));
+        entries.add(new Entry(		1677509696, 3));
+        entries.add(new Entry(	1677596096, 5));
+        entries.add(new Entry(		1677682496, 7));
+        entries.add(new Entry(		1677768896, 3));
+        entries.add(new Entry(	1677855296, 5)); // Entry(x-value, y-value)
+        entries.add(new Entry(		1677941696, 7));
+        entries.add(new Entry(		1678028096, 3));
 
         LineDataSet dataSet = new LineDataSet(entries, "Custom Date Range"); // Replace "Custom Date Range" with your desired label
         dataSet.setColor(Color.BLUE); // Customize the color of the line
         dataSet.setDrawCircles(false); // Remove circles on data points
-
         LineData lineData = new LineData(dataSet);
+        lineChart.setData(lineData);
 
         XAxis xAxis = lineChart.getXAxis();
         xAxis.setValueFormatter(new ValueFormatter() {
@@ -78,47 +85,47 @@ public class LineChart3 extends AppCompatActivity {
 
         MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
         builder.setTitleText("Select Date Range");
-
 // Set the initial date range to the last 7 days
         Calendar calendar = Calendar.getInstance();
         long end = calendar.getTimeInMillis();
         calendar.add(Calendar.DAY_OF_MONTH, -7);
         long start = calendar.getTimeInMillis();
         builder.setSelection(new Pair<>(start, end));
-
         MaterialDatePicker<Pair<Long, Long>> picker = builder.build();
-
 // Set a listener to update the chart data based on the selected date range
         picker.addOnPositiveButtonClickListener(selection -> {
             long startTimestamp = selection.first / 1000;
             long endTimestamp = selection.second / 1000;
-            updateChartData(startTimestamp, endTimestamp);
+            updateChartData(lineChart, entries, startTimestamp, endTimestamp);
         });
-
 // Show the dialog when the user clicks a button or other UI element
-        View button = null;
+        Button button=findViewById(R.id.date_picker_button);
         button.setOnClickListener(view -> picker.show(getSupportFragmentManager(), "DATE_PICKER"));
 
-// Create a new LineDataSet and LineData object using the filtered data
-
-// Set the new LineData object on the chart
-        lineChart.setData(lineData);
-
-// Refresh the chart
-        lineChart.invalidate();
-
-
     }
-
-    private void updateChartData(long startTimestamp, long endTimestamp) {
-        // Filter the data points based on the selected date range
-        ArrayList<Entry> filteredEntries = new ArrayList<>();
-        Entry[] entries = new Entry[0];
-        for (Entry entry : entries) {
+    private void updateChartData(LineChart lineChart, List<Entry> chartData, long startTimestamp, long endTimestamp) {
+        // Filter the chart data based on the selected date range
+        List<Entry> filteredEntries = new ArrayList<>();
+        for (Entry entry : chartData) {
             long timestamp = (long) entry.getX();
             if (timestamp >= startTimestamp && timestamp <= endTimestamp) {
                 filteredEntries.add(entry);
             }
         }
+
+        // Create a new LineDataSet and LineData object using the filtered data
+        LineDataSet dataSet = new LineDataSet(filteredEntries, "Custom Date Range");
+        dataSet.setColor(Color.BLUE);
+        dataSet.setDrawCircles(false);
+
+        LineData lineData = new LineData(dataSet);
+
+        // Set the new LineData object on the chart
+        lineChart.setData(lineData);
+
+        // Refresh the chart
+        lineChart.invalidate();
     }
+
+
 }

@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         objects.add(2, new ContentItem("Graf 2", "Toto je graf 2."));
         objects.add(3, new ContentItem("Graf test", "Toto je test."));
 
-
         MyAdapter adapter = new MyAdapter(this, objects);
 
         ListView lv = findViewById(R.id.listView1);
