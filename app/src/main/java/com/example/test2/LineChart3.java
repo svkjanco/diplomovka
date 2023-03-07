@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 
@@ -16,7 +15,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
 
 import com.github.mikephil.charting.animation.Easing;
-import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -35,53 +33,118 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 public class LineChart3 extends AppCompatActivity {
 
+    //importnute data z data.json
+    LinkedList<String> timeStampRoundedToMinute = new LinkedList<>();
+    LinkedList<Float> received_optical_power = new LinkedList<>();
+    LinkedList<Float> avgTempDHT22 = new LinkedList<>();
+
+    private LineChart lineChart;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.datepicker);
-        setTitle("DatePickerTest");
+        setTitle("avgTempDHT22");
+        get_json(); //nacitanie dat z data.json
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        lineChart = findViewById(R.id.line_chart);
 
-        LineChart lineChart = findViewById(R.id.line_chart);
-        ArrayList<Entry> entries = new ArrayList<>();
-        entries.add(new Entry(	1677336896, 5));
-        entries.add(new Entry(		1677423296, 7));
-        entries.add(new Entry(		1677509696, 3));
-        entries.add(new Entry(	1677596096, 5));
-        entries.add(new Entry(		1677682496, 7));
-        entries.add(new Entry(		1677768896, 3));
-        entries.add(new Entry(	1677855296, 5)); // Entry(x-value, y-value)
-        entries.add(new Entry(		1677941696, 7));
-        entries.add(new Entry(		1678028096, 3));
+        //vlozenie dat1 do grafu
+        ArrayList<Entry> entry1 = new ArrayList<>();
+        for (int i = 0; i < timeStampRoundedToMinute.size(); i++) {
+            String dateString = timeStampRoundedToMinute.get(i);
+            try {
+                Date date = sdf.parse(dateString);
+                float seconds = (float) date.getTime() / 1000;
+                entry1.add(new Entry(seconds, avgTempDHT22.get(i)));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        LineDataSet dataSet1 = new LineDataSet(entry1, "avgTempDHT22");
+        dataSet1.setColor(Color.BLACK);
+        dataSet1.setLineWidth(1f);
+        dataSet1.setCircleRadius(2f);
+        dataSet1.setFillAlpha(65);
+        dataSet1.setFillColor(ColorTemplate.getHoloBlue());
+        dataSet1.setHighLightColor(Color.rgb(244, 117, 117));
+        dataSet1.setDrawCircleHole(false);
+        dataSet1.setDrawCircles(false);
 
-        LineDataSet dataSet = new LineDataSet(entries, "Custom Date Range"); // Replace "Custom Date Range" with your desired label
-        dataSet.setColor(Color.BLUE); // Customize the color of the line
-        dataSet.setDrawCircles(false); // Remove circles on data points
-        LineData lineData = new LineData(dataSet);
+        //vlozenie dat1 do grafu
+        ArrayList<Entry> entry2 = new ArrayList<>();
+        for (int i = 0; i < timeStampRoundedToMinute.size(); i++) {
+            String dateString = timeStampRoundedToMinute.get(i);
+            try {
+                Date date = sdf.parse(dateString);
+                float seconds = (float) date.getTime() / 1000;
+                entry2.add(new Entry(seconds, received_optical_power.get(i)));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        LineDataSet dataSet2 = new LineDataSet(entry2, "Recieved optical power");
+        dataSet2.setColor(Color.GREEN);
+        dataSet2.setLineWidth(1f);
+        dataSet2.setCircleRadius(2f);
+        dataSet2.setFillAlpha(65);
+        dataSet2.setFillColor(ColorTemplate.getHoloBlue());
+        dataSet2.setHighLightColor(Color.YELLOW);
+        dataSet2.setDrawCircleHole(false);
+        dataSet2.setDrawCircles(false);
+
+        LineData lineData = new LineData(dataSet1,dataSet2);
+        lineData.setValueTextSize(15f);
         lineChart.setData(lineData);
 
-        XAxis xAxis = lineChart.getXAxis();
-        xAxis.setValueFormatter(new ValueFormatter() {
-            private final SimpleDateFormat mFormat = new SimpleDateFormat("dd/MM/yyyy");
+        // nastavenie xovej osy
+        {
+            XAxis xAxis = lineChart.getXAxis();
+            xAxis.setValueFormatter(new ValueFormatter() {
+                private final SimpleDateFormat mFormat = new SimpleDateFormat("dd/MM/yyyy");
 
-            @Override
-            public String getFormattedValue(float value) {
-                // Convert Unix timestamp to date string
-                long timestamp = (long) value;
-                return mFormat.format(new Date(timestamp * 1000));
-            }
-        });
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM); // Set X-axis position
-        xAxis.setLabelRotationAngle(45f); // Rotate X-axis labels
+                @Override
+                public String getFormattedValue(float value) {
+                    // Convert Unix timestamp to date string
+                    long timestamp = (long) value;
+                    return mFormat.format(new Date(timestamp * 1000));
+                }
+            });
+            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM); // Set X-axis position
+            xAxis.setLabelRotationAngle(45f); // Rotate X-axis labels
+        }
+
+        // enable scaling and dragging
+        {
+            lineChart.setTouchEnabled(true);
+            lineChart.setDragDecelerationFrictionCoef(0.9f);
+            lineChart.setDragEnabled(true);
+            lineChart.setScaleEnabled(true);
+            lineChart.setDrawGridBackground(false);
+            lineChart.setHighlightPerDragEnabled(true);
+            // background color
+            lineChart.setBackgroundColor(Color.WHITE);
+            lineChart.setPinchZoom(true);
+
+            // create marker to display box when values are selected
+            CustomMarkerView mv = new CustomMarkerView(this,R.layout.custom_marker_view);
+            // Set the marker to the chart
+            mv.setChartView(lineChart);
+            lineChart.setMarker(mv);
+        }
+
 
         MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
         builder.setTitleText("Select Date Range");
@@ -96,36 +159,231 @@ public class LineChart3 extends AppCompatActivity {
         picker.addOnPositiveButtonClickListener(selection -> {
             long startTimestamp = selection.first / 1000;
             long endTimestamp = selection.second / 1000;
-            updateChartData(lineChart, entries, startTimestamp, endTimestamp);
+            updateChartData(lineChart, entry1, entry2, startTimestamp, endTimestamp);
         });
 // Show the dialog when the user clicks a button or other UI element
         Button button=findViewById(R.id.date_picker_button);
         button.setOnClickListener(view -> picker.show(getSupportFragmentManager(), "DATE_PICKER"));
 
     }
-    private void updateChartData(LineChart lineChart, List<Entry> chartData, long startTimestamp, long endTimestamp) {
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu1, menu);
+        return true;
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.actionToggleValues: {
+                List<ILineDataSet> sets = lineChart.getData()
+                        .getDataSets();
+
+                for (ILineDataSet iSet : sets) {
+
+                    LineDataSet set = (LineDataSet) iSet;
+                    set.setDrawValues(!set.isDrawValuesEnabled());
+                }
+
+                lineChart.invalidate();
+                break;
+            }
+            case R.id.actionToggleIcons: {
+                List<ILineDataSet> sets = lineChart.getData()
+                        .getDataSets();
+
+                for (ILineDataSet iSet : sets) {
+
+                    LineDataSet set = (LineDataSet) iSet;
+                    set.setDrawIcons(!set.isDrawIconsEnabled());
+                }
+
+                lineChart.invalidate();
+                break;
+            }
+            case R.id.actionToggleHighlight: {
+                if(lineChart.getData() != null) {
+                    lineChart.getData().setHighlightEnabled(!lineChart.getData().isHighlightEnabled());
+                    lineChart.invalidate();
+                }
+                break;
+            }
+            case R.id.actionToggleFilled: {
+
+                List<ILineDataSet> sets = lineChart.getData()
+                        .getDataSets();
+
+                for (ILineDataSet iSet : sets) {
+
+                    LineDataSet set = (LineDataSet) iSet;
+                    set.setDrawFilled(!set.isDrawFilledEnabled());
+                }
+                lineChart.invalidate();
+                break;
+            }
+            case R.id.actionToggleCircles: {
+                List<ILineDataSet> sets = lineChart.getData()
+                        .getDataSets();
+
+                for (ILineDataSet iSet : sets) {
+
+                    LineDataSet set = (LineDataSet) iSet;
+                    set.setDrawCircles(!set.isDrawCirclesEnabled());
+                }
+                lineChart.invalidate();
+                break;
+            }
+            case R.id.actionToggleCubic: {
+                List<ILineDataSet> sets = lineChart.getData()
+                        .getDataSets();
+
+                for (ILineDataSet iSet : sets) {
+
+                    LineDataSet set = (LineDataSet) iSet;
+                    set.setMode(set.getMode() == LineDataSet.Mode.CUBIC_BEZIER
+                            ? LineDataSet.Mode.LINEAR
+                            :  LineDataSet.Mode.CUBIC_BEZIER);
+                }
+                lineChart.invalidate();
+                break;
+            }
+            case R.id.actionToggleStepped: {
+                List<ILineDataSet> sets = lineChart.getData()
+                        .getDataSets();
+
+                for (ILineDataSet iSet : sets) {
+
+                    LineDataSet set = (LineDataSet) iSet;
+                    set.setMode(set.getMode() == LineDataSet.Mode.STEPPED
+                            ? LineDataSet.Mode.LINEAR
+                            :  LineDataSet.Mode.STEPPED);
+                }
+                lineChart.invalidate();
+                break;
+            }
+            case R.id.actionToggleHorizontalCubic: {
+                List<ILineDataSet> sets = lineChart.getData()
+                        .getDataSets();
+
+                for (ILineDataSet iSet : sets) {
+
+                    LineDataSet set = (LineDataSet) iSet;
+                    set.setMode(set.getMode() == LineDataSet.Mode.HORIZONTAL_BEZIER
+                            ? LineDataSet.Mode.LINEAR
+                            :  LineDataSet.Mode.HORIZONTAL_BEZIER);
+                }
+                lineChart.invalidate();
+                break;
+            }
+            case R.id.actionTogglePinch: {
+                lineChart.setPinchZoom(!lineChart.isPinchZoomEnabled());
+
+                lineChart.invalidate();
+                break;
+            }
+            case R.id.actionToggleAutoScaleMinMax: {
+                lineChart.setAutoScaleMinMaxEnabled(!lineChart.isAutoScaleMinMaxEnabled());
+                lineChart.notifyDataSetChanged();
+                break;
+            }
+            case R.id.animateX: {
+                lineChart.animateX(2000);
+                break;
+            }
+            case R.id.animateY: {
+                lineChart.animateY(2000, Easing.EaseInCubic);
+                break;
+            }
+            case R.id.animateXY: {
+                lineChart.animateXY(2000, 2000);
+                break;
+            }/*
+           case R.id.actionSave: {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    saveToGallery();
+                } else {
+                    requestStoragePermission(lineChart);
+                }
+                break;
+            } */
+        }
+        return true;
+    }
+
+    // nacitanie json dat
+    public void get_json(){
+        String json;
+        try {
+            InputStream is = getAssets().open("data.json");
+            int size=is.available();
+            byte[] buffer=new byte[size];
+            is.read(buffer);
+            is.close();
+
+            json=new String(buffer, StandardCharsets.UTF_8);
+            JSONArray jsonArray= new JSONArray(json);
+
+            for(int i=0; i<jsonArray.length(); i++){
+                JSONObject obj = jsonArray.getJSONObject(i);
+                timeStampRoundedToMinute.add(obj.getString("timeStampRoundedToMinute"));
+                received_optical_power.add((float) obj.getDouble("received_optical_power"));
+               avgTempDHT22.add((float) obj.getDouble("avgTempDHT22"));
+                System.out.println("Data looaded successfuly");
+            }
+        }
+        catch (IOException | JSONException e){
+            e.printStackTrace();
+        }
+    }
+
+    // updatnutie dat v grafe
+    private void updateChartData(LineChart lineChart, List<Entry> chartData1,List<Entry> chartData2, long startTimestamp, long endTimestamp) {
         // Filter the chart data based on the selected date range
-        List<Entry> filteredEntries = new ArrayList<>();
-        for (Entry entry : chartData) {
+        List<Entry> filteredEntries1 = new LinkedList<>();
+        for (Entry entry : chartData1) {
             long timestamp = (long) entry.getX();
             if (timestamp >= startTimestamp && timestamp <= endTimestamp) {
-                filteredEntries.add(entry);
+                filteredEntries1.add(entry);
             }
         }
 
         // Create a new LineDataSet and LineData object using the filtered data
-        LineDataSet dataSet = new LineDataSet(filteredEntries, "Custom Date Range");
-        dataSet.setColor(Color.BLUE);
-        dataSet.setDrawCircles(false);
+        LineDataSet dataSet1 = new LineDataSet(filteredEntries1, "avgTempDHT22");
+        dataSet1.setColor(Color.BLACK);
+        dataSet1.setLineWidth(1f);
+        dataSet1.setCircleRadius(2f);
+        dataSet1.setFillAlpha(65);
+        dataSet1.setFillColor(ColorTemplate.getHoloBlue());
+        dataSet1.setHighLightColor(Color.rgb(244, 117, 117));
+        dataSet1.setDrawCircleHole(false);
+        dataSet1.setDrawCircles(false);
 
-        LineData lineData = new LineData(dataSet);
+        List<Entry> filteredEntries2 = new LinkedList<>();
+        for (Entry entry : chartData2) {
+            long timestamp = (long) entry.getX();
+            if (timestamp >= startTimestamp && timestamp <= endTimestamp) {
+                filteredEntries2.add(entry);
+            }
+        }
+        LineDataSet dataSet2 = new LineDataSet(filteredEntries2, "Recieved optical power");
+        dataSet2.setColor(Color.GREEN);
+        dataSet2.setLineWidth(1f);
+        dataSet2.setCircleRadius(2f);
+        dataSet2.setFillAlpha(65);
+        dataSet2.setFillColor(ColorTemplate.getHoloBlue());
+        dataSet2.setHighLightColor(Color.YELLOW);
+        dataSet2.setDrawCircleHole(false);
+        dataSet2.setDrawCircles(false);
+
+        LineData lineData = new LineData(dataSet1,dataSet2);
 
         // Set the new LineData object on the chart
         lineChart.setData(lineData);
-
         // Refresh the chart
         lineChart.invalidate();
     }
-
-
 }

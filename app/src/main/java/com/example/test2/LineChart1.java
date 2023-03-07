@@ -8,9 +8,11 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.util.Pair;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.LineChart;
@@ -19,8 +21,10 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.android.material.datepicker.MaterialDatePicker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,42 +33,110 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 public class LineChart1 extends AppCompatActivity {
 
     //importnute data z data.json
-    ArrayList<String> timeStampRoundedToMinute = new ArrayList<>();
-    // ArrayList<Double> received_optical_power = new ArrayList<>();
-    ArrayList<Float> avgTemp = new ArrayList<>();
-   /* ArrayList<Double> avgPressure = new ArrayList<>();
-    ArrayList<Double> avgTempDHT22 = new ArrayList<>();
-    ArrayList<Double>  avgHumiDHT22 = new ArrayList<>();
-    ArrayList<Double>  avgTempT_ds18b20 = new ArrayList<>();
-    ArrayList<Double>  avgWindSpeedWU_anemometer = new ArrayList<>();
-    ArrayList<Double>  avgWindVoltageWU_anemometer = new ArrayList<>();
-    ArrayList<Double>  avgGM3G_gp2y1010au0f = new ArrayList<>();
-    ArrayList<Double>  avgVISIBAAV_miniOFS = new ArrayList<>();
+    LinkedList<String> timeStampRoundedToMinute = new LinkedList<>();
+    LinkedList<Float> received_optical_power = new LinkedList<>();
+    LinkedList<Float> avgTemp = new LinkedList<>();
+   /* LinkedList<Float> avgPressure = new LinkedList<>();
+    LinkedList<Float> avgTempDHT22 = new LinkedList<>();
+    LinkedList<Float>  avgHumiDHT22 = new LinkedList<>();
+    LinkedList<Float>  avgTempT_ds18b20 = new LinkedList<>();
+    LinkedList<Float>  avgWindSpeedWU_anemometer = new LinkedList<>();
+    LinkedList<Float>  avgWindVoltageWU_anemometer = new LinkedList<>();
+    LinkedList<Float>  avgGM3G_gp2y1010au0f = new LinkedList<>();
+    LinkedList<Float>  avgVISIBAAV_miniOFS = new LinkedList<>();
     */
 
-    LineChart lineChart;
-    LineData lineData;
-    ArrayList<Entry> entryList = new ArrayList<>();
-
+    private LineChart lineChart;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_line1);
+        setContentView(R.layout.datepicker);
         setTitle("AvgTemp");
-
         get_json(); //nacitanie dat z data.json
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        lineChart = findViewById(R.id.line_chart);
+
+        //vlozenie dat1 do grafu
+        ArrayList<Entry> entry1 = new ArrayList<>();
+        for (int i = 0; i < timeStampRoundedToMinute.size(); i++) {
+            String dateString = timeStampRoundedToMinute.get(i);
+            try {
+                Date date = sdf.parse(dateString);
+                float seconds = (float) date.getTime() / 1000;
+                entry1.add(new Entry(seconds, avgTemp.get(i)));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        LineDataSet dataSet1 = new LineDataSet(entry1, "AvgTemp");
+        dataSet1.setColor(Color.BLACK);
+        dataSet1.setLineWidth(1f);
+        dataSet1.setCircleRadius(2f);
+        dataSet1.setFillAlpha(65);
+        dataSet1.setFillColor(ColorTemplate.getHoloBlue());
+        dataSet1.setHighLightColor(Color.rgb(244, 117, 117));
+        dataSet1.setDrawCircleHole(false);
+        dataSet1.setDrawCircles(false);
+
+        //vlozenie dat1 do grafu
+        ArrayList<Entry> entry2 = new ArrayList<>();
+        for (int i = 0; i < timeStampRoundedToMinute.size(); i++) {
+            String dateString = timeStampRoundedToMinute.get(i);
+            try {
+                Date date = sdf.parse(dateString);
+                float seconds = (float) date.getTime() / 1000;
+                entry2.add(new Entry(seconds, received_optical_power.get(i)));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        LineDataSet dataSet2 = new LineDataSet(entry2, "Recieved optical power");
+        dataSet2.setColor(Color.GREEN);
+        dataSet2.setLineWidth(1f);
+        dataSet2.setCircleRadius(2f);
+        dataSet2.setFillAlpha(65);
+        dataSet2.setFillColor(ColorTemplate.getHoloBlue());
+        dataSet2.setHighLightColor(Color.YELLOW);
+        dataSet2.setDrawCircleHole(false);
+        dataSet2.setDrawCircles(false);
+
+        LineData lineData = new LineData(dataSet1,dataSet2);
+        lineData.setValueTextSize(15f);
+        lineChart.setData(lineData);
+
+        // nastavenie xovej osy
+        {
+            XAxis xAxis = lineChart.getXAxis();
+        xAxis.setValueFormatter(new ValueFormatter() {
+            private final SimpleDateFormat mFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+            @Override
+            public String getFormattedValue(float value) {
+                // Convert Unix timestamp to date string
+                long timestamp = (long) value;
+                return mFormat.format(new Date(timestamp * 1000));
+            }
+        });
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM); // Set X-axis position
+        xAxis.setLabelRotationAngle(45f); // Rotate X-axis labels
+        }
 
         // enable scaling and dragging
         {
-            lineChart = findViewById(R.id.chart1);
             lineChart.setTouchEnabled(true);
             lineChart.setDragDecelerationFrictionCoef(0.9f);
             lineChart.setDragEnabled(true);
@@ -82,39 +154,26 @@ public class LineChart1 extends AppCompatActivity {
             lineChart.setMarker(mv);
         }
 
-        // nastavenie xovej osy
-        {
-            XAxis xAxis = lineChart.getXAxis();
-            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-            xAxis.setTextSize(15f);
-            xAxis.setValueFormatter(new IndexAxisValueFormatter(timeStampRoundedToMinute));/*for x axis values*/
-            xAxis.setLabelCount(timeStampRoundedToMinute.size());
-            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-            xAxis.setDrawLabels(true);    //to hide all xaxis values
-            xAxis.setDrawGridLines(false);
-            xAxis.setDrawAxisLine(true);
-            xAxis.setLabelCount(1);
-        }
 
-        //add data to chart
-        for(int i=0;i<timeStampRoundedToMinute.size();i++) {
-            entryList.add(new Entry( i+1, avgTemp.get(i)));
-        }
-        LineDataSet lineDataSet = new LineDataSet(entryList,"avgTemp");
-        lineDataSet.setColor(Color.BLACK);
-        lineDataSet.setLineWidth(2f);
-        lineDataSet.setCircleRadius(3f);
-        lineDataSet.setFillAlpha(65);
-        lineDataSet.setFillColor(ColorTemplate.getHoloBlue());
-        lineDataSet.setHighLightColor(Color.rgb(244, 117, 117));
-        lineDataSet.setDrawCircleHole(false);
-        lineDataSet.setDrawCircles(false);
+        MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
+        builder.setTitleText("Select Date Range");
+// Set the initial date range to the last 7 days
+        Calendar calendar = Calendar.getInstance();
+        long end = calendar.getTimeInMillis();
+        calendar.add(Calendar.DAY_OF_MONTH, -7);
+        long start = calendar.getTimeInMillis();
+        builder.setSelection(new Pair<>(start, end));
+        MaterialDatePicker<Pair<Long, Long>> picker = builder.build();
+// Set a listener to update the chart data based on the selected date range
+        picker.addOnPositiveButtonClickListener(selection -> {
+            long startTimestamp = selection.first / 1000;
+            long endTimestamp = selection.second / 1000;
+            updateChartData(lineChart, entry1, entry2, startTimestamp, endTimestamp);
+        });
+// Show the dialog when the user clicks a button or other UI element
+        Button button=findViewById(R.id.date_picker_button);
+        button.setOnClickListener(view -> picker.show(getSupportFragmentManager(), "DATE_PICKER"));
 
-
-
-        lineData = new LineData(lineDataSet);
-        lineData.setValueTextSize(15f);
-        lineChart.setData(lineData);
     }
 
     @Override
@@ -251,8 +310,8 @@ public class LineChart1 extends AppCompatActivity {
             case R.id.animateXY: {
                 lineChart.animateXY(2000, 2000);
                 break;
-            }
-        /*    case R.id.actionSave: {
+            }/*
+           case R.id.actionSave: {
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                     saveToGallery();
                 } else {
@@ -280,7 +339,7 @@ public class LineChart1 extends AppCompatActivity {
             for(int i=0; i<jsonArray.length(); i++){
                 JSONObject obj = jsonArray.getJSONObject(i);
                 timeStampRoundedToMinute.add(obj.getString("timeStampRoundedToMinute"));
-               // received_optical_power.add(obj.getDouble("received_optical_power"));
+               received_optical_power.add((float) obj.getDouble("received_optical_power"));
                 avgTemp.add((float) obj.getDouble("avgTemp"));
                /* avgPressure.add(obj.getDouble("avgPressure"));
                avgTempDHT22.add(obj.getDouble("avgTempDHT22"));
@@ -296,5 +355,52 @@ public class LineChart1 extends AppCompatActivity {
         catch (IOException | JSONException e){
             e.printStackTrace();
         }
+    }
+
+    // updatnutie dat v grafe
+    private void updateChartData(LineChart lineChart, List<Entry> chartData1,List<Entry> chartData2, long startTimestamp, long endTimestamp) {
+        // Filter the chart data based on the selected date range
+        List<Entry> filteredEntries1 = new LinkedList<>();
+        for (Entry entry : chartData1) {
+            long timestamp = (long) entry.getX();
+            if (timestamp >= startTimestamp && timestamp <= endTimestamp) {
+                filteredEntries1.add(entry);
+            }
+        }
+
+        // Create a new LineDataSet and LineData object using the filtered data
+        LineDataSet dataSet1 = new LineDataSet(filteredEntries1, "AvgTemp");
+        dataSet1.setColor(Color.BLACK);
+        dataSet1.setLineWidth(1f);
+        dataSet1.setCircleRadius(2f);
+        dataSet1.setFillAlpha(65);
+        dataSet1.setFillColor(ColorTemplate.getHoloBlue());
+        dataSet1.setHighLightColor(Color.rgb(244, 117, 117));
+        dataSet1.setDrawCircleHole(false);
+        dataSet1.setDrawCircles(false);
+
+        List<Entry> filteredEntries2 = new LinkedList<>();
+        for (Entry entry : chartData2) {
+            long timestamp = (long) entry.getX();
+            if (timestamp >= startTimestamp && timestamp <= endTimestamp) {
+                filteredEntries2.add(entry);
+            }
+        }
+        LineDataSet dataSet2 = new LineDataSet(filteredEntries2, "Recieved optical power");
+        dataSet2.setColor(Color.GREEN);
+        dataSet2.setLineWidth(1f);
+        dataSet2.setCircleRadius(2f);
+        dataSet2.setFillAlpha(65);
+        dataSet2.setFillColor(ColorTemplate.getHoloBlue());
+        dataSet2.setHighLightColor(Color.YELLOW);
+        dataSet2.setDrawCircleHole(false);
+        dataSet2.setDrawCircles(false);
+
+        LineData lineData = new LineData(dataSet1,dataSet2);
+
+        // Set the new LineData object on the chart
+        lineChart.setData(lineData);
+        // Refresh the chart
+        lineChart.invalidate();
     }
 }

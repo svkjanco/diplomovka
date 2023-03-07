@@ -29,9 +29,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         ////
         objects.add(0, new ContentItem("Grafy"));
 
-        objects.add(1, new ContentItem("Graf 1", "Toto je graf 1."));
-        objects.add(2, new ContentItem("Graf 2", "Toto je graf 2."));
-        objects.add(3, new ContentItem("Graf test", "Toto je test."));
+        objects.add(1, new ContentItem("Graf 1", "Recieved optical power, AvgTemp"));
+        objects.add(2, new ContentItem("Graf 2", "Recieved optical power, avgPressure"));
+        objects.add(3, new ContentItem("Graf 3", "Recieved optical power, avgTempDHT22"));
 
         MyAdapter adapter = new MyAdapter(this, objects);
 
