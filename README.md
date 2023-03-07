@@ -1,4 +1,6 @@
-# diplomovka![1 (1)](https://user-images.githubusercontent.com/75333926/206119465-d8e239e1-dfed-4021-a3a1-3e8cc8587596.png)
-![1 (4)](https://user-images.githubusercontent.com/75333926/206119477-e384b031-5ef6-472c-bd51-61745f675b0e.png)
-![1 (3)](https://user-images.githubusercontent.com/75333926/206119482-0b11bfe0-5f6c-464e-8a36-0bcab9e27d00.png)
-![1 (2)](https://user-images.githubusercontent.com/75333926/206119484-fb623668-db73-4ff7-8df9-52d4c2a17297.png)
+
+<img src="https://user-images.githubusercontent.com/75333926/223359914-3f276a9e-cbc1-40d5-96a4-cea0a787910a.png" width="300" height="560">
+<img src="https://user-images.githubusercontent.com/75333926/223359907-70a8665a-6fe9-4851-bb94-796f05037e17.png" width="300" height="560">
+<img src="https://user-images.githubusercontent.com/75333926/223359912-fc26d5b0-a728-4551-af13-9cac6cdf171f.png" width="300" height="560">
+<img src="https://user-images.githubusercontent.com/75333926/223359918-14a62e54-d78d-4a53-8e27-44b411966378.png" width="300" height="560">
+<img src="https://user-images.githubusercontent.com/75333926/223359920-c8415748-0f6c-4971-9f85-1f1ca88526cb.png" width="300" height="560">
