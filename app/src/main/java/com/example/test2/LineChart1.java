@@ -121,18 +121,18 @@ public class LineChart1 extends AppCompatActivity {
         // nastavenie xovej osy
         {
             XAxis xAxis = lineChart.getXAxis();
-        xAxis.setValueFormatter(new ValueFormatter() {
-            private final SimpleDateFormat mFormat = new SimpleDateFormat("dd/MM/yyyy");
+            xAxis.setValueFormatter(new ValueFormatter() {
+                private final SimpleDateFormat mFormat = new SimpleDateFormat("dd/MM/yyyy");
 
-            @Override
-            public String getFormattedValue(float value) {
-                // Convert Unix timestamp to date string
-                long timestamp = (long) value;
-                return mFormat.format(new Date(timestamp * 1000));
-            }
-        });
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM); // Set X-axis position
-        xAxis.setLabelRotationAngle(45f); // Rotate X-axis labels
+                @Override
+                public String getFormattedValue(float value) {
+                    // Convert Unix timestamp to date string
+                    long timestamp = (long) value;
+                    return mFormat.format(new Date(timestamp * 1000));
+                }
+            });
+            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM); // Set X-axis position
+            xAxis.setLabelRotationAngle(45f); // Rotate X-axis labels
         }
 
         // enable scaling and dragging
@@ -339,7 +339,7 @@ public class LineChart1 extends AppCompatActivity {
             for(int i=0; i<jsonArray.length(); i++){
                 JSONObject obj = jsonArray.getJSONObject(i);
                 timeStampRoundedToMinute.add(obj.getString("timeStampRoundedToMinute"));
-               received_optical_power.add((float) obj.getDouble("received_optical_power"));
+                received_optical_power.add((float) obj.getDouble("received_optical_power"));
                 avgTemp.add((float) obj.getDouble("avgTemp"));
                /* avgPressure.add(obj.getDouble("avgPressure"));
                avgTempDHT22.add(obj.getDouble("avgTempDHT22"));

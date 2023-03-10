@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         objects.add(1, new ContentItem("Graf 1", "Recieved optical power, AvgTemp"));
         objects.add(2, new ContentItem("Graf 2", "Recieved optical power, avgPressure"));
         objects.add(3, new ContentItem("Graf 3", "Recieved optical power, avgTempDHT22"));
+        objects.add(4, new ContentItem("Test", "Test test"));
 
         MyAdapter adapter = new MyAdapter(this, objects);
 
@@ -56,6 +57,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             case 3:
                 i = new Intent(this, LineChart3.class);
                 break;
+            case 4:
+                i = new Intent(this, LineChart4.class);
+                break;
         }
 
         if (i != null) startActivity(i);
@@ -64,6 +68,5 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
 }
-
 
 
