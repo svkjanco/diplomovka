@@ -1,8 +1,6 @@
 package com.example.test2;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
@@ -11,7 +9,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
 
 import com.github.mikephil.charting.animation.Easing;
@@ -20,7 +17,6 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
@@ -30,6 +26,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -40,7 +38,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
+
 
 public class LineChart2 extends AppCompatActivity {
 
@@ -48,7 +46,6 @@ public class LineChart2 extends AppCompatActivity {
     LinkedList<String> timeStampRoundedToMinute = new LinkedList<>();
     LinkedList<Float> received_optical_power = new LinkedList<>();
     LinkedList<Float> avgPressure = new LinkedList<>();
-
 
     private LineChart lineChart;
     @Override
@@ -59,7 +56,7 @@ public class LineChart2 extends AppCompatActivity {
         setContentView(R.layout.datepicker);
         setTitle("avgPressure");
         get_json(); //nacitanie dat z data.json
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         lineChart = findViewById(R.id.line_chart);
 
         //vlozenie dat1 do grafu
@@ -68,6 +65,7 @@ public class LineChart2 extends AppCompatActivity {
             String dateString = timeStampRoundedToMinute.get(i);
             try {
                 Date date = sdf.parse(dateString);
+                assert date != null;
                 float seconds = (float) date.getTime() / 1000;
                 entry1.add(new Entry(seconds, avgPressure.get(i)));
             } catch (ParseException e) {
@@ -90,6 +88,7 @@ public class LineChart2 extends AppCompatActivity {
             String dateString = timeStampRoundedToMinute.get(i);
             try {
                 Date date = sdf.parse(dateString);
+                assert date != null;
                 float seconds = (float) date.getTime() / 1000;
                 entry2.add(new Entry(seconds, received_optical_power.get(i)));
             } catch (ParseException e) {
@@ -114,6 +113,7 @@ public class LineChart2 extends AppCompatActivity {
         {
             XAxis xAxis = lineChart.getXAxis();
             xAxis.setValueFormatter(new ValueFormatter() {
+                @SuppressLint("SimpleDateFormat")
                 private final SimpleDateFormat mFormat = new SimpleDateFormat("dd/MM/yyyy");
 
                 @Override
@@ -302,42 +302,36 @@ public class LineChart2 extends AppCompatActivity {
             case R.id.animateXY: {
                 lineChart.animateXY(2000, 2000);
                 break;
-            }/*
-           case R.id.actionSave: {
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    saveToGallery();
-                } else {
-                    requestStoragePermission(lineChart);
-                }
-                break;
-            } */
+            }
         }
         return true;
     }
 
     // nacitanie json dat
-    public void get_json(){
+    public void get_json() {
         String json;
-        try {
-            InputStream is = getAssets().open("data.json");
-            int size=is.available();
-            byte[] buffer=new byte[size];
-            is.read(buffer);
-            is.close();
+        File file = new File(getFilesDir(), "data1.json");
+        if (file.exists()) {
+            try {
+                InputStream is = new FileInputStream(file);
+                int size = is.available();
+                byte[] buffer = new byte[size];
+                is.read(buffer);
+                is.close();
 
-            json=new String(buffer, StandardCharsets.UTF_8);
-            JSONArray jsonArray= new JSONArray(json);
+                json = new String(buffer, StandardCharsets.UTF_8);
+                JSONArray jsonArray = new JSONArray(json);
 
-            for(int i=0; i<jsonArray.length(); i++){
-                JSONObject obj = jsonArray.getJSONObject(i);
-                timeStampRoundedToMinute.add(obj.getString("timeStampRoundedToMinute"));
-                received_optical_power.add((float) obj.getDouble("received_optical_power"));
-                avgPressure.add((float) obj.getDouble("avgPressure"));
-                System.out.println("Data looaded successfuly");
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject obj = jsonArray.getJSONObject(i);
+                    timeStampRoundedToMinute.add(obj.getString("timeStampRoundedToMinute"));
+                    received_optical_power.add((float) obj.getDouble("received_optical_power"));
+                    avgPressure.add((float) obj.getDouble("avgTemp"));
+                    System.out.println("Data looaded successfuly 1");
+                }
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
             }
-        }
-        catch (IOException | JSONException e){
-            e.printStackTrace();
         }
     }
 

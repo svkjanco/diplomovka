@@ -52,10 +52,6 @@
         android:id="@+id/animateXY"
         android:title="@string/animateXY">
     </item>
-    <item
-        android:id="@+id/actionSave"
-        android:title="@string/actionSave">
-    </item>
 </menu>
 
 

@@ -1,8 +1,6 @@
 package com.example.test2;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
@@ -11,7 +9,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
 
 import com.github.mikephil.charting.animation.Easing;
@@ -20,7 +17,6 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
@@ -30,6 +26,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -40,7 +38,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
+
 
 public class LineChart1 extends AppCompatActivity {
 
@@ -48,15 +46,6 @@ public class LineChart1 extends AppCompatActivity {
     LinkedList<String> timeStampRoundedToMinute = new LinkedList<>();
     LinkedList<Float> received_optical_power = new LinkedList<>();
     LinkedList<Float> avgTemp = new LinkedList<>();
-   /* LinkedList<Float> avgPressure = new LinkedList<>();
-    LinkedList<Float> avgTempDHT22 = new LinkedList<>();
-    LinkedList<Float>  avgHumiDHT22 = new LinkedList<>();
-    LinkedList<Float>  avgTempT_ds18b20 = new LinkedList<>();
-    LinkedList<Float>  avgWindSpeedWU_anemometer = new LinkedList<>();
-    LinkedList<Float>  avgWindVoltageWU_anemometer = new LinkedList<>();
-    LinkedList<Float>  avgGM3G_gp2y1010au0f = new LinkedList<>();
-    LinkedList<Float>  avgVISIBAAV_miniOFS = new LinkedList<>();
-    */
 
     private LineChart lineChart;
     @Override
@@ -67,7 +56,7 @@ public class LineChart1 extends AppCompatActivity {
         setContentView(R.layout.datepicker);
         setTitle("AvgTemp");
         get_json(); //nacitanie dat z data.json
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         lineChart = findViewById(R.id.line_chart);
 
         //vlozenie dat1 do grafu
@@ -76,6 +65,7 @@ public class LineChart1 extends AppCompatActivity {
             String dateString = timeStampRoundedToMinute.get(i);
             try {
                 Date date = sdf.parse(dateString);
+                assert date != null;
                 float seconds = (float) date.getTime() / 1000;
                 entry1.add(new Entry(seconds, avgTemp.get(i)));
             } catch (ParseException e) {
@@ -98,6 +88,7 @@ public class LineChart1 extends AppCompatActivity {
             String dateString = timeStampRoundedToMinute.get(i);
             try {
                 Date date = sdf.parse(dateString);
+                assert date != null;
                 float seconds = (float) date.getTime() / 1000;
                 entry2.add(new Entry(seconds, received_optical_power.get(i)));
             } catch (ParseException e) {
@@ -122,6 +113,7 @@ public class LineChart1 extends AppCompatActivity {
         {
             XAxis xAxis = lineChart.getXAxis();
             xAxis.setValueFormatter(new ValueFormatter() {
+                @SuppressLint("SimpleDateFormat")
                 private final SimpleDateFormat mFormat = new SimpleDateFormat("dd/MM/yyyy");
 
                 @Override
@@ -310,50 +302,36 @@ public class LineChart1 extends AppCompatActivity {
             case R.id.animateXY: {
                 lineChart.animateXY(2000, 2000);
                 break;
-            }/*
-           case R.id.actionSave: {
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    saveToGallery();
-                } else {
-                    requestStoragePermission(lineChart);
-                }
-                break;
-            } */
+            }
         }
         return true;
     }
 
     // nacitanie json dat
-    public void get_json(){
+    public void get_json() {
         String json;
-        try {
-            InputStream is = getAssets().open("data.json");
-            int size=is.available();
-            byte[] buffer=new byte[size];
-            is.read(buffer);
-            is.close();
+        File file = new File(getFilesDir(), "data1.json");
+        if (file.exists()) {
+            try {
+                InputStream is = new FileInputStream(file);
+                int size = is.available();
+                byte[] buffer = new byte[size];
+                is.read(buffer);
+                is.close();
 
-            json=new String(buffer, StandardCharsets.UTF_8);
-            JSONArray jsonArray= new JSONArray(json);
+                json = new String(buffer, StandardCharsets.UTF_8);
+                JSONArray jsonArray = new JSONArray(json);
 
-            for(int i=0; i<jsonArray.length(); i++){
-                JSONObject obj = jsonArray.getJSONObject(i);
-                timeStampRoundedToMinute.add(obj.getString("timeStampRoundedToMinute"));
-                received_optical_power.add((float) obj.getDouble("received_optical_power"));
-                avgTemp.add((float) obj.getDouble("avgTemp"));
-               /* avgPressure.add(obj.getDouble("avgPressure"));
-               avgTempDHT22.add(obj.getDouble("avgTempDHT22"));
-                avgHumiDHT22.add(obj.getDouble("avgHumiDHT22"));
-               avgTempT_ds18b20.add(obj.getDouble("avgTempT_ds18b20"));
-               avgWindSpeedWU_anemometer.add(obj.getDouble("avgWindSpeedWU_anemometer"));
-              avgWindVoltageWU_anemometer.add(obj.getDouble("avgWindVoltageWU_anemometer"));
-               avgGM3G_gp2y1010au0f.add(obj.getDouble("avgGM3G_gp2y1010au0f"));
-                avgVISIBAAV_miniOFS.add(obj.getDouble("avgVISIBAAV_miniOFS"));   */
-                System.out.println("Data looaded successfuly");
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject obj = jsonArray.getJSONObject(i);
+                    timeStampRoundedToMinute.add(obj.getString("timeStampRoundedToMinute"));
+                    received_optical_power.add((float) obj.getDouble("received_optical_power"));
+                    avgTemp.add((float) obj.getDouble("avgTemp"));
+                    System.out.println("Data looaded successfuly 1");
+                }
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
             }
-        }
-        catch (IOException | JSONException e){
-            e.printStackTrace();
         }
     }
 

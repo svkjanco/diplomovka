@@ -1,8 +1,6 @@
 package com.example.test2;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
@@ -11,7 +9,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
 
 import com.github.mikephil.charting.animation.Easing;
@@ -20,7 +17,6 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
@@ -30,6 +26,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -40,14 +38,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
+
 
 public class LineChart3 extends AppCompatActivity {
 
     //importnute data z data.json
     LinkedList<String> timeStampRoundedToMinute = new LinkedList<>();
     LinkedList<Float> received_optical_power = new LinkedList<>();
-    LinkedList<Float> avgTempDHT22 = new LinkedList<>();
+    LinkedList<Float> avgHumiDHT22 = new LinkedList<>();
 
     private LineChart lineChart;
     @Override
@@ -56,9 +54,9 @@ public class LineChart3 extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.datepicker);
-        setTitle("avgTempDHT22");
+        setTitle("avgHumiDHT22");
         get_json(); //nacitanie dat z data.json
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         lineChart = findViewById(R.id.line_chart);
 
         //vlozenie dat1 do grafu
@@ -67,13 +65,14 @@ public class LineChart3 extends AppCompatActivity {
             String dateString = timeStampRoundedToMinute.get(i);
             try {
                 Date date = sdf.parse(dateString);
+                assert date != null;
                 float seconds = (float) date.getTime() / 1000;
-                entry1.add(new Entry(seconds, avgTempDHT22.get(i)));
+                entry1.add(new Entry(seconds, avgHumiDHT22.get(i)));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
-        LineDataSet dataSet1 = new LineDataSet(entry1, "avgTempDHT22");
+        LineDataSet dataSet1 = new LineDataSet(entry1, "avgHumiDHT22");
         dataSet1.setColor(Color.BLACK);
         dataSet1.setLineWidth(1f);
         dataSet1.setCircleRadius(2f);
@@ -89,6 +88,7 @@ public class LineChart3 extends AppCompatActivity {
             String dateString = timeStampRoundedToMinute.get(i);
             try {
                 Date date = sdf.parse(dateString);
+                assert date != null;
                 float seconds = (float) date.getTime() / 1000;
                 entry2.add(new Entry(seconds, received_optical_power.get(i)));
             } catch (ParseException e) {
@@ -113,6 +113,7 @@ public class LineChart3 extends AppCompatActivity {
         {
             XAxis xAxis = lineChart.getXAxis();
             xAxis.setValueFormatter(new ValueFormatter() {
+                @SuppressLint("SimpleDateFormat")
                 private final SimpleDateFormat mFormat = new SimpleDateFormat("dd/MM/yyyy");
 
                 @Override
@@ -301,42 +302,36 @@ public class LineChart3 extends AppCompatActivity {
             case R.id.animateXY: {
                 lineChart.animateXY(2000, 2000);
                 break;
-            }/*
-           case R.id.actionSave: {
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    saveToGallery();
-                } else {
-                    requestStoragePermission(lineChart);
-                }
-                break;
-            } */
+            }
         }
         return true;
     }
 
     // nacitanie json dat
-    public void get_json(){
+    public void get_json() {
         String json;
-        try {
-            InputStream is = getAssets().open("data.json");
-            int size=is.available();
-            byte[] buffer=new byte[size];
-            is.read(buffer);
-            is.close();
+        File file = new File(getFilesDir(), "data1.json");
+        if (file.exists()) {
+            try {
+                InputStream is = new FileInputStream(file);
+                int size = is.available();
+                byte[] buffer = new byte[size];
+                is.read(buffer);
+                is.close();
 
-            json=new String(buffer, StandardCharsets.UTF_8);
-            JSONArray jsonArray= new JSONArray(json);
+                json = new String(buffer, StandardCharsets.UTF_8);
+                JSONArray jsonArray = new JSONArray(json);
 
-            for(int i=0; i<jsonArray.length(); i++){
-                JSONObject obj = jsonArray.getJSONObject(i);
-                timeStampRoundedToMinute.add(obj.getString("timeStampRoundedToMinute"));
-                received_optical_power.add((float) obj.getDouble("received_optical_power"));
-               avgTempDHT22.add((float) obj.getDouble("avgTempDHT22"));
-                System.out.println("Data looaded successfuly");
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject obj = jsonArray.getJSONObject(i);
+                    timeStampRoundedToMinute.add(obj.getString("timeStampRoundedToMinute"));
+                    received_optical_power.add((float) obj.getDouble("received_optical_power"));
+                    avgHumiDHT22.add((float) obj.getDouble("avgTemp"));
+                    System.out.println("Data looaded successfuly 1");
+                }
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
             }
-        }
-        catch (IOException | JSONException e){
-            e.printStackTrace();
         }
     }
 
@@ -352,7 +347,7 @@ public class LineChart3 extends AppCompatActivity {
         }
 
         // Create a new LineDataSet and LineData object using the filtered data
-        LineDataSet dataSet1 = new LineDataSet(filteredEntries1, "avgTempDHT22");
+        LineDataSet dataSet1 = new LineDataSet(filteredEntries1, "avgHumiDHT22");
         dataSet1.setColor(Color.BLACK);
         dataSet1.setLineWidth(1f);
         dataSet1.setCircleRadius(2f);

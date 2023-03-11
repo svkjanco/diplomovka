@@ -1,7 +1,6 @@
 package com.example.test2;
 
 class ContentItem {
-
     final String name;
     final String desc;
     boolean isSection = false;
