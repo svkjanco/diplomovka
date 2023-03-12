@@ -2,6 +2,8 @@ package com.example.test2;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
@@ -12,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.utils.Utils;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,28 +30,23 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
 
-
-        //vytvori prazdny json subor
-        FileOutputStream outputStream = null;
-        try {
-            outputStream = openFileOutput("data1.json", Context.MODE_PRIVATE);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            outputStream.write("".getBytes());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            outputStream.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        File dataFile = new File(getApplicationContext().getFilesDir(), "data1.json");
+        if (!dataFile.exists()) {
+            // if the file does not exist, create an empty file
+            try {
+                dataFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         //stiahne z url json data do suboru
-        System.out.println(getFilesDir());
-        new GetDataTask(getApplicationContext()).execute();
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        if (isConnected) {
+            new GetDataTask(getApplicationContext()).execute();
+        }
 
         setTitle("Menu");
         Utils.init(this);
