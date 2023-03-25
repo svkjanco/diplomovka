@@ -53,7 +53,7 @@ public class LineChart4 extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.datepicker);
-        setTitle("avgHumiDHT22");
+        setTitle("Vlhkosť k RSSI");
         get_json(); //nacitanie dat z data.json
         @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         lineChart = findViewById(R.id.line_chart);
@@ -71,7 +71,7 @@ public class LineChart4 extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-        LineDataSet dataSet1 = new LineDataSet(entry1, "avgHumiDHT22");
+        LineDataSet dataSet1 = new LineDataSet(entry1, "Vlhkosť");
         dataSet1.setColor(Color.BLACK);
         dataSet1.setLineWidth(1f);
         dataSet1.setCircleRadius(2f);
@@ -94,7 +94,7 @@ public class LineChart4 extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-        LineDataSet dataSet2 = new LineDataSet(entry2, "Recieved optical power");
+        LineDataSet dataSet2 = new LineDataSet(entry2, "RSSI");
         dataSet2.setColor(Color.GREEN);
         dataSet2.setLineWidth(1f);
         dataSet2.setCircleRadius(2f);
@@ -147,7 +147,7 @@ public class LineChart4 extends AppCompatActivity {
 
 
         MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
-        builder.setTitleText("Select Date Range");
+        builder.setTitleText("Časový interval");
 // Set the initial date range to the last 7 days
         Calendar calendar = Calendar.getInstance();
         long end = calendar.getTimeInMillis();
@@ -346,7 +346,7 @@ public class LineChart4 extends AppCompatActivity {
         }
 
         // Create a new LineDataSet and LineData object using the filtered data
-        LineDataSet dataSet1 = new LineDataSet(filteredEntries1, "avgHumiDHT22");
+        LineDataSet dataSet1 = new LineDataSet(filteredEntries1, "Vlkosť");
         dataSet1.setColor(Color.BLACK);
         dataSet1.setLineWidth(1f);
         dataSet1.setCircleRadius(2f);
@@ -363,7 +363,7 @@ public class LineChart4 extends AppCompatActivity {
                 filteredEntries2.add(entry);
             }
         }
-        LineDataSet dataSet2 = new LineDataSet(filteredEntries2, "Recieved optical power");
+        LineDataSet dataSet2 = new LineDataSet(filteredEntries2, "RSSI");
         dataSet2.setColor(Color.GREEN);
         dataSet2.setLineWidth(1f);
         dataSet2.setCircleRadius(2f);

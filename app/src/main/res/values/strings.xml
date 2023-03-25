@@ -49,5 +49,8 @@
     <string name="dash">-</string>
     <string name="scrollViewStart">START OF SCROLLVIEW</string>
     <string name="scrollViewEnd">END OF SCROLLVIEW</string>
+    <string name="todo">TODO</string>
+    <string name="menu_grafy">Menu grafy</string>
+    <string name="vybertecasovyinterval">Vyberte časový interval</string>
 
 </resources>
