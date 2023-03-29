@@ -5,10 +5,6 @@
         android:title="@string/actionToggleValues">
     </item>
     <item
-        android:id="@+id/actionToggleIcons"
-        android:title="@string/actionToggleIcons">
-    </item>
-    <item
         android:id="@+id/actionToggleFilled"
         android:title="@string/actionToggleFilled">
     </item>
@@ -25,20 +21,12 @@
         android:title="@string/actionToggleStepped">
     </item>
     <item
-        android:id="@+id/actionToggleHorizontalCubic"
-        android:title="@string/actionToggleHorizontalCubic">
-    </item>
-    <item
         android:id="@+id/actionTogglePinch"
         android:title="@string/actionTogglePinch">
     </item>
     <item
         android:id="@+id/actionToggleAutoScaleMinMax"
         android:title="@string/actionToggleAutoScale">
-    </item>
-    <item
-        android:id="@+id/actionToggleHighlight"
-        android:title="@string/actionToggleHighlight">
     </item>
     <item
         android:id="@+id/animateX"

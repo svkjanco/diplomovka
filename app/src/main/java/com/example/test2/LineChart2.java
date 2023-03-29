@@ -107,6 +107,7 @@ public class LineChart2 extends AppCompatActivity {
 
         LineData lineData = new LineData(dataSet1,dataSet2);
         lineData.setValueTextSize(15f);
+        lineData.setDrawValues(false);
         lineChart.setData(lineData);
 
         // nastavenie xovej osy
@@ -193,26 +194,6 @@ public class LineChart2 extends AppCompatActivity {
                 lineChart.invalidate();
                 break;
             }
-            case R.id.actionToggleIcons: {
-                List<ILineDataSet> sets = lineChart.getData()
-                        .getDataSets();
-
-                for (ILineDataSet iSet : sets) {
-
-                    LineDataSet set = (LineDataSet) iSet;
-                    set.setDrawIcons(!set.isDrawIconsEnabled());
-                }
-
-                lineChart.invalidate();
-                break;
-            }
-            case R.id.actionToggleHighlight: {
-                if(lineChart.getData() != null) {
-                    lineChart.getData().setHighlightEnabled(!lineChart.getData().isHighlightEnabled());
-                    lineChart.invalidate();
-                }
-                break;
-            }
             case R.id.actionToggleFilled: {
 
                 List<ILineDataSet> sets = lineChart.getData()
@@ -262,20 +243,6 @@ public class LineChart2 extends AppCompatActivity {
                     set.setMode(set.getMode() == LineDataSet.Mode.STEPPED
                             ? LineDataSet.Mode.LINEAR
                             :  LineDataSet.Mode.STEPPED);
-                }
-                lineChart.invalidate();
-                break;
-            }
-            case R.id.actionToggleHorizontalCubic: {
-                List<ILineDataSet> sets = lineChart.getData()
-                        .getDataSets();
-
-                for (ILineDataSet iSet : sets) {
-
-                    LineDataSet set = (LineDataSet) iSet;
-                    set.setMode(set.getMode() == LineDataSet.Mode.HORIZONTAL_BEZIER
-                            ? LineDataSet.Mode.LINEAR
-                            :  LineDataSet.Mode.HORIZONTAL_BEZIER);
                 }
                 lineChart.invalidate();
                 break;
