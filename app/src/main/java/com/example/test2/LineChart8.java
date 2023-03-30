@@ -44,7 +44,7 @@ public class LineChart8 extends AppCompatActivity {
     //importnute data z data.json
     LinkedList<String> timeStampRoundedToMinute = new LinkedList<>();
     LinkedList<Float> received_optical_power = new LinkedList<>();
-    LinkedList<Float> avgGM3G_gp2y1010au0f = new LinkedList<>();
+    LinkedList<Float> avgVISIBAAV_miniOFS = new LinkedList<>();
 
     private LineChart lineChart;
     @Override
@@ -53,7 +53,7 @@ public class LineChart8 extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.datepicker);
-        setTitle("Koncetrácia částic k RSSI");
+        setTitle("Viditeľnosť k RSSI");
         get_json(); //nacitanie dat z data.json
         @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         lineChart = findViewById(R.id.line_chart);
@@ -66,12 +66,12 @@ public class LineChart8 extends AppCompatActivity {
                 Date date = sdf.parse(dateString);
                 assert date != null;
                 float seconds = (float) date.getTime() / 1000;
-                entry1.add(new Entry(seconds, avgGM3G_gp2y1010au0f.get(i)));
+                entry1.add(new Entry(seconds, avgVISIBAAV_miniOFS.get(i)));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
-        LineDataSet dataSet1 = new LineDataSet(entry1, "Koncetrácia částic");
+        LineDataSet dataSet1 = new LineDataSet(entry1, "Viditeľnosť");
         dataSet1.setColor(Color.BLACK);
         dataSet1.setLineWidth(1f);
         dataSet1.setCircleRadius(2f);
@@ -292,7 +292,7 @@ public class LineChart8 extends AppCompatActivity {
                     JSONObject obj = jsonArray.getJSONObject(i);
                     timeStampRoundedToMinute.add(obj.getString("timeStampRoundedToMinute"));
                     received_optical_power.add((float) obj.getDouble("received_optical_power"));
-                    avgGM3G_gp2y1010au0f.add((float) obj.getDouble("avgGM3G_gp2y1010au0f"));
+                    avgVISIBAAV_miniOFS.add((float) obj.getDouble("avgVISIBAAV_miniOFS"));
                     System.out.println("Data looaded successfuly 1");
                 }
             } catch (IOException | JSONException e) {
@@ -313,7 +313,7 @@ public class LineChart8 extends AppCompatActivity {
         }
 
         // Create a new LineDataSet and LineData object using the filtered data
-        LineDataSet dataSet1 = new LineDataSet(filteredEntries1, "Koncetrácia častíc");
+        LineDataSet dataSet1 = new LineDataSet(filteredEntries1, "Viditeľnosť");
         dataSet1.setColor(Color.BLACK);
         dataSet1.setLineWidth(1f);
         dataSet1.setCircleRadius(2f);

@@ -293,7 +293,7 @@ public class LineChart2 extends AppCompatActivity {
                     JSONObject obj = jsonArray.getJSONObject(i);
                     timeStampRoundedToMinute.add(obj.getString("timeStampRoundedToMinute"));
                     received_optical_power.add((float) obj.getDouble("received_optical_power"));
-                    avgPressure.add((float) obj.getDouble("avgTemp"));
+                    avgPressure.add((float) obj.getDouble("avgPressure"));
                     System.out.println("Data looaded successfuly 1");
                 }
             } catch (IOException | JSONException e) {

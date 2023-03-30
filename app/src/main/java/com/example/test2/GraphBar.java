@@ -34,9 +34,8 @@ public class GraphBar extends AppCompatActivity implements AdapterView.OnItemCli
         objects.add(4, new ContentItem("Vlhkosť", "Vlhkosť k RSSI"));
         objects.add(5, new ContentItem("teplota zo senzora", "Teplota zo senzora avgTempT_ds18b20 k RSSI"));
         objects.add(6, new ContentItem("Rýchlosť vetra", "Rýchlosť vetra k RSSI"));
-        objects.add(7, new ContentItem("Napätie zo senzora rýchlosti vetra", "Napätie zo senzora k RSSI"));
-        objects.add(8, new ContentItem("Koncetrácia částic", "Koncentrácia částic k RSSI"));
-        objects.add(9, new ContentItem("Viditeľnosť", "Viditeľnosť k RSSI"));
+        objects.add(7, new ContentItem("Koncetrácia částic", "Koncentrácia částic k RSSI"));
+        objects.add(8, new ContentItem("Viditeľnosť", "Viditeľnosť k RSSI"));
 
         MyAdapter adapter = new MyAdapter(this, objects);
 
@@ -73,9 +72,6 @@ public class GraphBar extends AppCompatActivity implements AdapterView.OnItemCli
                 break;
             case 8:
                 i = new Intent(this, LineChart8.class);
-                break;
-            case 9:
-                i = new Intent(this, LineChart9.class);
                 break;
         }
         if (i != null) startActivity(i);

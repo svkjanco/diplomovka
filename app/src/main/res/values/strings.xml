@@ -11,7 +11,7 @@
     <string name="actionToggleAutoScale">Prepnúť automatickú mierku</string>
 
     <string name="actionToggleFilled">Vyplň graf</string>
-    <string name="actionToggleCircles">Toggle Circles</string>
+    <string name="actionToggleCircles">Zobraz kruhové body</string>
 
     <string name="actionToggleCubic">Prepnúť kruhy</string>
     <string name="actionToggleStepped">Prepnúť stupňovanie</string>

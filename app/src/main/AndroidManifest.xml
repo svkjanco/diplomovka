@@ -26,9 +26,8 @@
         <activity android:name="LineChart4" />
         <activity android:name="LineChart5" />
         <activity android:name="LineChart6" />
-        <activity android:name="LineChart7" />
-        <activity android:name="LineChart8" />
-        <activity android:name="LineChart9" />
+        <activity android:name=".LineChart7" />
+        <activity android:name=".LineChart8" />
         <activity android:name=".GraphBar" />
     </application>
 

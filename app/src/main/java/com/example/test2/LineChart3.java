@@ -45,7 +45,7 @@ public class LineChart3 extends AppCompatActivity {
     //importnute data z data.json
     LinkedList<String> timeStampRoundedToMinute = new LinkedList<>();
     LinkedList<Float> received_optical_power = new LinkedList<>();
-    LinkedList<Float> avgHumiDHT22 = new LinkedList<>();
+    LinkedList<Float> avgTempDHT22 = new LinkedList<>();
 
     private LineChart lineChart;
     @Override
@@ -67,7 +67,7 @@ public class LineChart3 extends AppCompatActivity {
                 Date date = sdf.parse(dateString);
                 assert date != null;
                 float seconds = (float) date.getTime() / 1000;
-                entry1.add(new Entry(seconds, avgHumiDHT22.get(i)));
+                entry1.add(new Entry(seconds, avgTempDHT22.get(i)));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -293,7 +293,7 @@ public class LineChart3 extends AppCompatActivity {
                     JSONObject obj = jsonArray.getJSONObject(i);
                     timeStampRoundedToMinute.add(obj.getString("timeStampRoundedToMinute"));
                     received_optical_power.add((float) obj.getDouble("received_optical_power"));
-                    avgHumiDHT22.add((float) obj.getDouble("avgTemp"));
+                    avgTempDHT22.add((float) obj.getDouble("avgTempDHT22"));
                     System.out.println("Data looaded successfuly 1");
                 }
             } catch (IOException | JSONException e) {
